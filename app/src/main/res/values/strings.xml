@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Mopidy</string>
+    <string name="action_settings">Settings</string>
+    <string name="open_browser">Open in browser</string>
+    <string name="no_devices">Can\'t find any Mopidy devices!</string>
+    <string name="sentry_dsn">https://fb90deae8b514b2dbf5fc60fdcbfb5d9:e595554e65db4b1b955aa841f38a869f@app.getsentry.com/28038</string>
+
+</resources>
