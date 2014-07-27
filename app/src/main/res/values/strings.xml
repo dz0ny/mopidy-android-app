@@ -7,4 +7,7 @@
     <string name="open_browser">Open in browser</string>
     <string name="show_qr">Show QR code</string>
     <string name="modifed_mopidy_api">https://gist.githubusercontent.com/dz0ny/adc674cdfba4070ba15c/raw</string>
+    <string name="add">Add Player</string>
+    <string name="refresh">Refresh</string>
+    <string name="update_url">https://api.github.com/repos/dz0ny/mopidy-android-app/releases</string>
 </resources>

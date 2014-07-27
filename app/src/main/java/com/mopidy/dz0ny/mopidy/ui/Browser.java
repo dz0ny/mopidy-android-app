@@ -2,7 +2,15 @@ package com.mopidy.dz0ny.mopidy.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
@@ -23,6 +31,7 @@ public class Browser extends Activity {
     @InjectView(R.id.web_view)
     WebView wv;
     private Mopidy app;
+    private boolean fullScreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +41,19 @@ public class Browser extends Activity {
 
         Intent intent = getIntent();
         app = intent.getParcelableExtra("app");
-        setTitle(getString(R.string.app_name) + " - " +app.getName());
+        setTitle(getString(R.string.app_name) + " - " + app.getName());
         wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 Timber.i("Console: %s", consoleMessage.message());
+                return true;
+            }
+        });
+        wv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (fullScreen)
+                    ToggleFullScreen(false);
                 return true;
             }
         });
@@ -45,7 +62,7 @@ public class Browser extends Activity {
                     @Override
                     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
 
-                        if (url.endsWith("/mopidy/mopidy.js") || url.endsWith("/mopidy/mopidy.min.js")){
+                        if (url.endsWith("/mopidy/mopidy.js") || url.endsWith("/mopidy/mopidy.min.js")) {
 
                             try {
                                 Timber.i("Loading hijacked: %s", url);
@@ -68,5 +85,55 @@ public class Browser extends Activity {
         );
         wv.loadUrl(app.getURL());
         wv.addJavascriptInterface(new WebSocketFactory(wv), "WebSocketFactory");
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.browser, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_full_screen:
+                ToggleFullScreen(false);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void ToggleFullScreen(Boolean force) {
+        if (!fullScreen || force) {
+            if (Build.VERSION.SDK_INT < 16) { //ye olde method
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            } else { // Jellybean and up, new hotness
+                View decorView = getWindow().getDecorView();
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+                getActionBar().hide();
+            }
+        } else {
+            if (Build.VERSION.SDK_INT < 16) { //ye olde method
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            } else { // Jellybean and up, new hotness
+                View decorView = getWindow().getDecorView();
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                getActionBar().show();
+            }
+        }
+        fullScreen = !fullScreen;
+    }
+
+    @Override
+    protected void onResume() {
+        if (fullScreen)
+            ToggleFullScreen(true);
+        super.onResume();
     }
 }

@@ -5,6 +5,8 @@
     <!-- REQUIRED to send captures to Sentry -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <!-- OPTIONAL but makes Sentry-Android smarter -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 

@@ -9,11 +9,14 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
 import com.mopidy.dz0ny.mopidy.R;
+import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
 import com.mopidy.dz0ny.mopidy.api.Mopidy;
 import com.mopidy.dz0ny.mopidy.services.Discovery;
 
@@ -59,16 +62,19 @@ public class PlayerDiscovery extends Activity {
         header.setPopupMenu(R.menu.player_discovery, new CardHeader.OnClickCardHeaderPopupMenuListener() {
             @Override
             public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.action_browser) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(app.getURL()));
-                    startActivity(browserIntent);
+                Uri path;
+                switch (menuItem.getItemId()) {
+                    case R.id.action_browser:
+                        path   = Uri.parse(app.getURL());
+                        break;
+                    case R.id.action_qr:
+                        path   = Uri.parse(getQR(app.getURL()));
+                        break;
+                    default:
+                        return;
                 }
-
-                if (menuItem.getItemId() == R.id.action_qr) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getQR(app.getURL())));
-                    startActivity(browserIntent);
-                }
-
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, path);
+                startActivity(browserIntent);
             }
         });
 
@@ -107,7 +113,7 @@ public class PlayerDiscovery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discovery);
         ButterKnife.inject(this);
-
+        AutoUpdate.check(this);
         registerReceivers();
 
         mCardArrayAdapter = new CardArrayAdapter(this, cards);
@@ -131,5 +137,24 @@ public class PlayerDiscovery extends Activity {
     public Context getContext() {
         return this;
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.discovery, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                return true;
+            case R.id.action_refresh:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

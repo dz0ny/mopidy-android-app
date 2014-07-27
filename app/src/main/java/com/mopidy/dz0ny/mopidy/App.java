@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 
 import com.joshdholtz.sentry.Sentry;
+import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
 import com.mopidy.dz0ny.mopidy.services.Discovery;
 
 import timber.log.Timber;
@@ -14,7 +15,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         Sentry.init(this, getString(R.string.sentry_dsn));
+        AutoUpdate.init(this, getString(R.string.update_url));
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());

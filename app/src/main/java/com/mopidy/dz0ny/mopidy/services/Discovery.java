@@ -55,11 +55,14 @@ public class Discovery extends Service {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
+                ArrayList<Mopidy> toremove = new ArrayList<Mopidy>();
                 for (Mopidy iapp : devices) {
                     if (iapp.getName().equalsIgnoreCase(service.getServiceName())) {
-                        devices.remove(iapp);
+                        toremove.add(iapp);
                     }
                 }
+                devices.removeAll(toremove);
+                refreshListeners();
             }
 
             @Override
@@ -97,10 +100,10 @@ public class Discovery extends Service {
 
                 int port = serviceInfo.getPort();
                 InetAddress host = serviceInfo.getHost();
-                Mopidy app = new Mopidy(serviceInfo.getServiceName(), host.getHostAddress(), port);
-
+                Timber.i("Discovered  %s", host);
                 try {
-                    if (host.isReachable(15)) {
+                    if (host.isReachable(15) && !host.getHostAddress().contains(":")) {
+                        Mopidy app = new Mopidy(serviceInfo.getServiceName().replaceAll("\\\\\\\\032", " "), host.getHostAddress(), port);
                         for (Mopidy iapp : devices) {
                             if (iapp.getURL().equalsIgnoreCase(app.getURL())) {
                                 return;
