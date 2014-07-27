@@ -12,23 +12,26 @@ import com.mopidy.dz0ny.mopidy.api.Mopidy;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import timber.log.Timber;
 
 public class Discovery extends Service {
     public static final String SERVICE_TYPE = "_mopidy-http._tcp.";
-    public static String Removed = "DiscoveryHelperRemoved";
-    public static String Added = "DiscoveryHelperAdded";
+    public static String OnRefresh = "DiscoveryHelperRefresh";
+    ArrayList<Mopidy> devices = new ArrayList<Mopidy>();
     NsdManager mNsdManager;
     NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
 
     @Override
     public void onCreate() {
+        super.onCreate();
         mNsdManager = (NsdManager) this.getSystemService(Context.NSD_SERVICE);
         initializeResolveListener();
         initializeDiscoveryListener();
-        super.onCreate();
+        mNsdManager.discoverServices(
+                SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
     }
 
     @Override
@@ -38,8 +41,7 @@ public class Discovery extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mNsdManager.discoverServices(
-                SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+        refreshListeners();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -53,7 +55,11 @@ public class Discovery extends Service {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-
+                for (Mopidy iapp : devices) {
+                    if (iapp.getName().equalsIgnoreCase(service.getServiceName())) {
+                        devices.remove(iapp);
+                    }
+                }
             }
 
             @Override
@@ -95,9 +101,13 @@ public class Discovery extends Service {
 
                 try {
                     if (host.isReachable(15)) {
-                        Intent intent = new Intent(Added);
-                        intent.putExtra("app", app);
-                        sendMopidy(intent);
+                        for (Mopidy iapp : devices) {
+                            if (iapp.getURL().equalsIgnoreCase(app.getURL())) {
+                                return;
+                            }
+                        }
+                        devices.add(app);
+                        refreshListeners();
                     }
                 } catch (IOException e) {
                     Timber.i("Failed reaching %s", host);
@@ -107,9 +117,12 @@ public class Discovery extends Service {
         };
     }
 
-    private void sendMopidy(Intent intent) {
+    private void refreshListeners() {
+        Intent intent = new Intent(OnRefresh);
+        intent.putExtra("devices", devices);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
+
 
     @Override
     public void onDestroy() {

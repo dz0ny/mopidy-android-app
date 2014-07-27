@@ -12,6 +12,15 @@ import java.util.concurrent.ExecutionException;
 
 public class Mopidy implements Parcelable {
 
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Mopidy createFromParcel(Parcel in) {
+            return new Mopidy(in);
+        }
+
+        public Mopidy[] newArray(int size) {
+            return new Mopidy[size];
+        }
+    };
     private String name;
     private String host;
     private int port;
@@ -21,8 +30,14 @@ public class Mopidy implements Parcelable {
         this.name = name;
         this.host = host;
         this.port = port;
-        this.url = "http://" + host + ":" + port;
-        ;
+        this.url = "http://" + this.host + ":" + this.port;
+    }
+
+    public Mopidy(Parcel in) {
+        this.name = in.readString();
+        this.host = in.readString();
+        this.port = in.readInt();
+        this.url = "http://" + this.host + ":" + this.port;
     }
 
     @Override

@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.mopidy.dz0ny.mopidy.ui.Browser">
+    <item
+        android:id="@+id/action_browser"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/open_browser" />
+    <item
+        android:id="@+id/action_qr"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/show_qr" />
+</menu>

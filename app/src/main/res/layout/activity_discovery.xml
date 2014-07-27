@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".Browser">
+
+    <it.gmariotti.cardslib.library.view.CardListView
+        android:id="@+id/myList"
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+        card:list_card_layout_resourceID="@layout/list_card_thumbnail_layout" />
+
+    <TextView
+        android:id="@+id/empty_list_item"
+        style="@style/card_inner_title"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/myList"
+        android:gravity="center"
+        android:text="@string/no_devices"
+        android:textAlignment="center"
+        android:textIsSelectable="false"
+        android:textSize="22dp"
+        android:visibility="gone"></TextView>
+</RelativeLayout>

@@ -2,9 +2,9 @@
 <resources>
 
     <string name="app_name">Mopidy</string>
-    <string name="action_settings">Settings</string>
-    <string name="open_browser">Open in browser</string>
-    <string name="no_devices">Can\'t find any Mopidy devices!</string>
+    <string name="no_devices">Can\'t find any Mopidy on local network!</string>
     <string name="sentry_dsn">https://fb90deae8b514b2dbf5fc60fdcbfb5d9:e595554e65db4b1b955aa841f38a869f@app.getsentry.com/28038</string>
-
+    <string name="open_browser">Open in browser</string>
+    <string name="show_qr">Show QR code</string>
+    <string name="modifed_mopidy_api">https://gist.githubusercontent.com/dz0ny/adc674cdfba4070ba15c/raw</string>
 </resources>
