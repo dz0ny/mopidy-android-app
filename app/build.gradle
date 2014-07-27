@@ -12,6 +12,16 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    buildTypes {
+        debug {
+            applicationIdSuffix '.dev'
+        }
+        release {
+            runProguard false
+        }
+    }
+    productFlavors {
+    }
 }
 
 dependencies {
