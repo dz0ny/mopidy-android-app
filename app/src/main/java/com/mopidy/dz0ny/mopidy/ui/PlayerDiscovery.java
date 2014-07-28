@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,7 +34,7 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import timber.log.Timber;
 
 
-public class PlayerDiscovery extends Activity {
+public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRefreshListener{
 
     private BroadcastReceiver appNewMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -51,6 +52,8 @@ public class PlayerDiscovery extends Activity {
     CardArrayAdapter mCardArrayAdapter;
     @InjectView(R.id.myList)
     CardListView listView;
+    @InjectView(R.id.swipe_container)
+    SwipeRefreshLayout swipe_container;
 
     private Card PlayerCard(final Mopidy app) {
 
@@ -109,10 +112,15 @@ public class PlayerDiscovery extends Activity {
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discovery);
         ButterKnife.inject(this);
+        swipe_container.setRefreshing(true);
+        swipe_container.setOnRefreshListener(this);
+        swipe_container.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
         AutoUpdate.check(this);
         registerReceivers();
 
@@ -122,7 +130,6 @@ public class PlayerDiscovery extends Activity {
     }
 
     private void registerReceivers() {
-        setProgressBarIndeterminateVisibility(true);
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 appNewMessageReceiver, new IntentFilter(Discovery.OnRefresh));
     }
@@ -130,8 +137,13 @@ public class PlayerDiscovery extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, Discovery.class);
-        startService(intent);
+        Discovery.Start(this);
+    }
+
+    @Override
+    protected void onPause() {
+        Discovery.Stop(this);
+        super.onPause();
     }
 
     public Context getContext() {
@@ -151,10 +163,13 @@ public class PlayerDiscovery extends Activity {
         switch (item.getItemId()) {
             case R.id.action_add:
                 return true;
-            case R.id.action_refresh:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onRefresh() {
+
     }
 }

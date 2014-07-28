@@ -132,4 +132,16 @@ public class Discovery extends Service {
         mNsdManager.stopServiceDiscovery(mDiscoveryListener);
         super.onDestroy();
     }
+
+    public static void Stop(Context c){
+        Timber.i("Stopping Discovery");
+        Intent intent = new Intent(c, Discovery.class);
+        c.stopService(intent);
+    }
+
+    public static void Start(Context c){
+        Timber.i("Starting Discovery");
+        Intent intent = new Intent(c, Discovery.class);
+        c.startService(intent);
+    }
 }

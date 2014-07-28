@@ -22,14 +22,12 @@ public class App extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
-        Intent intent = new Intent(this, Discovery.class);
-        startService(intent);
+        Discovery.Start(this);
     }
 
     @Override
     public void onTerminate() {
-        Intent intent = new Intent(this, Discovery.class);
-        stopService(intent);
+        Discovery.Stop(this);
         super.onTerminate();
     }
 }
