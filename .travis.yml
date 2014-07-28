@@ -1,19 +1,10 @@
 language: java
 
-branches:
-  only:
-    - dev
-    - master
-
 jdk: oraclejdk7
 
 env:
   global:
     - ANDROID_SDK_VERSION="r23"
-
-notifications:
-  email: false
-
 
 before_install:
 
@@ -23,9 +14,9 @@ before_install:
 
   # required libs for android build tools
   # Update a system for ia32 libraries
-  - sudo apt-get update -qq
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get update; fi
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
+  #- sudo apt-get update -qq
+  #- if [ `uname -m` = x86_64 ]; then sudo apt-get update; fi
+  #- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
 
   # for gradle output style
   - export TERM=dumb
@@ -71,7 +62,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    repo: dz0ny/mopidy-android-app
+    all_branches: true
 
 cache:
   directories:
