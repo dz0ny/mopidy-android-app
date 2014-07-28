@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -19,10 +20,37 @@ import timber.log.Timber;
 public class Discovery extends Service {
     public static final String SERVICE_TYPE = "_mopidy-http._tcp.";
     public static String OnRefresh = "DiscoveryHelperRefresh";
-    ArrayList<Mopidy> devices = new ArrayList<Mopidy>();
+    public static String OnStop = "DiscoveryHelperStop";
+    public static String OnStart = "DiscoveryHelperStart";
+
     NsdManager mNsdManager;
     NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
+    Handler handler = new Handler();
+
+    private Runnable autostop = new Runnable() {
+        @Override
+        public void run() {
+            Discovery.Stop(getContext());
+        }
+    };
+
+
+    private Context getContext() {
+        return this;
+    }
+
+    public static void Stop(Context c){
+        Timber.i("Stopping Discovery");
+        Intent intent = new Intent(c, Discovery.class);
+        c.stopService(intent);
+    }
+
+    public static void Start(Context c){
+        Timber.i("Starting Discovery");
+        Intent intent = new Intent(c, Discovery.class);
+        c.startService(intent);
+    }
 
     @Override
     public void onCreate() {
@@ -30,8 +58,7 @@ public class Discovery extends Service {
         mNsdManager = (NsdManager) this.getSystemService(Context.NSD_SERVICE);
         initializeResolveListener();
         initializeDiscoveryListener();
-        mNsdManager.discoverServices(
-                SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+        handler.postDelayed(autostop, 1000 * 15);
     }
 
     @Override
@@ -41,7 +68,10 @@ public class Discovery extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        refreshListeners();
+        handler.removeCallbacks(autostop);
+        handler.postDelayed(autostop, 1000*15);
+        mNsdManager.discoverServices(
+                SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -55,34 +85,27 @@ public class Discovery extends Service {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-                ArrayList<Mopidy> toremove = new ArrayList<Mopidy>();
-                for (Mopidy iapp : devices) {
-                    if (iapp.getName().equalsIgnoreCase(service.getServiceName())) {
-                        toremove.add(iapp);
-                    }
-                }
-                devices.removeAll(toremove);
-                refreshListeners();
+
             }
 
             @Override
             public void onStartDiscoveryFailed(String serviceType, int errorCode) {
-                mNsdManager.stopServiceDiscovery(this);
+
             }
 
             @Override
             public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-                mNsdManager.stopServiceDiscovery(this);
+
             }
 
             @Override
             public void onDiscoveryStarted(String s) {
-
+                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(OnStart));
             }
 
             @Override
             public void onDiscoveryStopped(String s) {
-
+                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(OnStop));
             }
         };
     }
@@ -104,13 +127,7 @@ public class Discovery extends Service {
                 try {
                     if (host.isReachable(15) && !host.getHostAddress().contains(":")) {
                         Mopidy app = new Mopidy(serviceInfo.getServiceName().replaceAll("\\\\\\\\032", " "), host.getHostAddress(), port);
-                        for (Mopidy iapp : devices) {
-                            if (iapp.getURL().equalsIgnoreCase(app.getURL())) {
-                                return;
-                            }
-                        }
-                        devices.add(app);
-                        refreshListeners();
+                        refreshListeners(app);
                     }
                 } catch (IOException e) {
                     Timber.i("Failed reaching %s", host);
@@ -120,28 +137,15 @@ public class Discovery extends Service {
         };
     }
 
-    private void refreshListeners() {
+    private void refreshListeners(Mopidy app) {
         Intent intent = new Intent(OnRefresh);
-        intent.putExtra("devices", devices);
+        intent.putExtra("app", app);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-
     @Override
     public void onDestroy() {
-        mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(OnStop));
         super.onDestroy();
-    }
-
-    public static void Stop(Context c){
-        Timber.i("Stopping Discovery");
-        Intent intent = new Intent(c, Discovery.class);
-        c.stopService(intent);
-    }
-
-    public static void Start(Context c){
-        Timber.i("Starting Discovery");
-        Intent intent = new Intent(c, Discovery.class);
-        c.startService(intent);
     }
 }

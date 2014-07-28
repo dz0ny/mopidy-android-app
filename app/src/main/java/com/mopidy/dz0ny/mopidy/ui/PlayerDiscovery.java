@@ -8,13 +8,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 
 import com.mopidy.dz0ny.mopidy.R;
 import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
@@ -31,29 +31,44 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.base.BaseCard;
 import it.gmariotti.cardslib.library.view.CardListView;
-import timber.log.Timber;
 
 
-public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRefreshListener{
+public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRefreshListener {
 
-    private BroadcastReceiver appNewMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ArrayList<Mopidy> devices = intent.getParcelableArrayListExtra("devices");
-            cards.clear();
-            for (Mopidy app : devices) {
-                cards.add(PlayerCard(app));
-            }
-            mCardArrayAdapter.notifyDataSetChanged();
-
-        }
-    };
     ArrayList<Card> cards = new ArrayList<Card>();
+    ArrayList<String> hosts = new ArrayList<String>();
     CardArrayAdapter mCardArrayAdapter;
     @InjectView(R.id.myList)
     CardListView listView;
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout swipe_container;
+    private BroadcastReceiver OnRefreshReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Mopidy iapp = intent.getParcelableExtra("app");
+
+            if (!hosts.contains(iapp.getURL())) {
+
+                cards.add(PlayerCard(iapp));
+                mCardArrayAdapter.notifyDataSetChanged();
+                hosts.add(iapp.getURL());
+            }
+
+
+        }
+    };
+    private BroadcastReceiver OnStartReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            swipe_container.setRefreshing(true);
+        }
+    };
+    private BroadcastReceiver OnStopReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            swipe_container.setRefreshing(false);
+        }
+    };
 
     private Card PlayerCard(final Mopidy app) {
 
@@ -68,10 +83,10 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
                 Uri path;
                 switch (menuItem.getItemId()) {
                     case R.id.action_browser:
-                        path   = Uri.parse(app.getURL());
+                        path = Uri.parse(app.getURL());
                         break;
                     case R.id.action_qr:
-                        path   = Uri.parse(getQR(app.getURL()));
+                        path = Uri.parse(getQR(app.getURL()));
                         break;
                     default:
                         return;
@@ -115,23 +130,29 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discovery);
         ButterKnife.inject(this);
-        swipe_container.setRefreshing(true);
+
         swipe_container.setOnRefreshListener(this);
         swipe_container.setColorScheme(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-        AutoUpdate.check(this);
+
         registerReceivers();
 
+        AutoUpdate.check(this);
+
         mCardArrayAdapter = new CardArrayAdapter(this, cards);
-        listView.setEmptyView(findViewById(R.id.empty_list_item));
+        listView.setEmptyView(findViewById(R.id.myListinfo));
         listView.setAdapter(mCardArrayAdapter);
     }
 
     private void registerReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                appNewMessageReceiver, new IntentFilter(Discovery.OnRefresh));
+                OnRefreshReceiver, new IntentFilter(Discovery.OnRefresh));
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                OnStopReceiver, new IntentFilter(Discovery.OnStop));
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                OnStartReceiver, new IntentFilter(Discovery.OnStart));
     }
 
     @Override
@@ -149,6 +170,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
     public Context getContext() {
         return this;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -170,6 +192,10 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onRefresh() {
-
+        Discovery.Stop(this);
+        hosts.clear();
+        cards.clear();
+        mCardArrayAdapter.notifyDataSetChanged();
+        Discovery.Start(getContext());
     }
 }

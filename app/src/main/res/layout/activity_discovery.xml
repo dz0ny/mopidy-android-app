@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
@@ -15,19 +16,36 @@
             android:layout_height="match_parent"
             card:list_card_layout_resourceID="@layout/list_card_thumbnail_layout" />
 
-        <TextView
-            android:id="@+id/empty_list_item"
-            style="@style/card_inner_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/myList"
-            android:gravity="center"
-            android:text="@string/no_devices"
-            android:textAlignment="center"
-            android:textIsSelectable="false"
-            android:textSize="22dp"
-            android:visibility="gone"></TextView>
-    </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/myListinfo"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center">
+
+
+            <ImageView
+                android:layout_width="99dp"
+                android:layout_height="99dp"
+                android:id="@+id/imageView"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:background="@drawable/ic_launcher" />
+
+            <TextView
+                style="@style/card_inner_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="@string/no_devices"
+                android:textAlignment="center"
+                android:textIsSelectable="false"
+                android:textSize="22dp"></TextView>
+        </LinearLayout>
+    </LinearLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

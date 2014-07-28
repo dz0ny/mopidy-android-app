@@ -22,7 +22,6 @@ public class App extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
-        Discovery.Start(this);
     }
 
     @Override
