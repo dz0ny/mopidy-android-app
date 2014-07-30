@@ -13,7 +13,6 @@ import com.mopidy.dz0ny.mopidy.api.Mopidy;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 
 import timber.log.Timber;
 
@@ -25,9 +24,8 @@ public class Discovery extends Service {
 
     NsdManager mNsdManager;
     NsdManager.DiscoveryListener mDiscoveryListener;
-    private NsdManager.ResolveListener mResolveListener;
     Handler handler = new Handler();
-
+    private NsdManager.ResolveListener mResolveListener;
     private Runnable autostop = new Runnable() {
         @Override
         public void run() {
@@ -35,21 +33,20 @@ public class Discovery extends Service {
         }
     };
 
-
-    private Context getContext() {
-        return this;
-    }
-
-    public static void Stop(Context c){
+    public static void Stop(Context c) {
         Timber.i("Stopping Discovery");
         Intent intent = new Intent(c, Discovery.class);
         c.stopService(intent);
     }
 
-    public static void Start(Context c){
+    public static void Start(Context c) {
         Timber.i("Starting Discovery");
         Intent intent = new Intent(c, Discovery.class);
         c.startService(intent);
+    }
+
+    private Context getContext() {
+        return this;
     }
 
     @Override
@@ -68,11 +65,14 @@ public class Discovery extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) {
+            return START_NOT_STICKY;
+        }
         handler.removeCallbacks(autostop);
-        handler.postDelayed(autostop, 1000*15);
+        handler.postDelayed(autostop, 1000 * 15);
         mNsdManager.discoverServices(
                 SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     public void initializeDiscoveryListener() {
@@ -145,6 +145,8 @@ public class Discovery extends Service {
 
     @Override
     public void onDestroy() {
+        mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+        Timber.i("Stopping service  %s", mDiscoveryListener);
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(OnStop));
         super.onDestroy();
     }

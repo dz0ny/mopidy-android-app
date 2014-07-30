@@ -2,19 +2,24 @@ package com.mopidy.dz0ny.mopidy.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.URLUtil;
+import android.widget.EditText;
 
 import com.mopidy.dz0ny.mopidy.R;
 import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
@@ -184,10 +189,88 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
+                showAddDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showAddDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        View add_view = getLayoutInflater().inflate(R.layout.add_player, null);
+        final EditText player_name = ButterKnife.findById(add_view, R.id.name);
+        final EditText player_host = ButterKnife.findById(add_view, R.id.host);
+        builder.setView(add_view);
+        player_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            // after every change has been made to this editText, we would like to check validity
+            public void afterTextChanged(Editable s) {
+                String text = player_name.getText().toString().trim();
+                player_name.setError(null);
+
+                // length 0 means there is no text
+                if (text.length() == 0) {
+                    player_name.setError("Name must be specified");
+                }
+            }
+        });
+        player_host.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            // after every change has been made to this editText, we would like to check validity
+            public void afterTextChanged(Editable s) {
+                String text = player_host.getText().toString().trim();
+                player_host.setError(null);
+
+                // length 0 means there is no text
+                if (text.length() == 0) {
+                    player_host.setError("Name must be specified");
+                }
+                if (!URLUtil.isHttpUrl(text)) {
+                    player_host.setError("Invalid URL!");
+                }
+
+            }
+        });
+        builder.setPositiveButton("Add", null);
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        builder.setTitle("Add Mopidy");
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
+
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.mopidy.dz0ny.mopidy;
 
 import android.app.Application;
-import android.content.Intent;
 
 import com.joshdholtz.sentry.Sentry;
 import com.mopidy.dz0ny.mopidy.api.AutoUpdate;

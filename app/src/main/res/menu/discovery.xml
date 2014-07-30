@@ -1,8 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mopidy.dz0ny.mopidy.ui.PlayerDiscovery">
-    <item android:id="@+id/action_add"
+    <item
+        android:id="@+id/action_add"
         android:icon="@drawable/ic_action_add"
-        android:title="@string/add"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="@string/add" />
 </menu>

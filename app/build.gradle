@@ -9,12 +9,12 @@ android {
         applicationId "com.mopidy.dz0ny.mopidy"
         minSdkVersion 16
         targetSdkVersion 20
-        versionCode 1
-        versionName "v0.6"
+        versionCode 7
+        versionName "v0.7"
     }
     buildTypes {
         debug {
-            applicationIdSuffix '.dev'
+            //applicationIdSuffix '.dev'
         }
         release {
             runProguard false
@@ -30,6 +30,7 @@ dependencies {
     compile 'com.github.gabrielemariotti.cards:library:1.8.0'
     compile 'com.jakewharton:butterknife:5.1.1'
     compile 'com.jakewharton.timber:timber:2.4.+'
+    compile 'org.eclipse.jetty:jetty-websocket:8.1.15.v20140411'
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:20.0.+'
 }
