@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
@@ -155,7 +156,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         ButterKnife.inject(this);
 
         swipe_container.setOnRefreshListener(this);
-        swipe_container.setColorScheme(android.R.color.holo_blue_bright,
+        swipe_container.setColorSchemeColors(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -239,7 +240,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View add_view = getLayoutInflater().inflate(R.layout.add_player, null);
+        @SuppressLint("InflateParams") View add_view = getLayoutInflater().inflate(R.layout.add_player, null);
         final EditText player_name = ButterKnife.findById(add_view, R.id.name);
         final EditText player_host = ButterKnife.findById(add_view, R.id.host);
         builder.setView(add_view);
@@ -322,12 +323,11 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
             e.setError("Required!");
         }
 
-        try {
-            URI host = URI.create(text);
-        } catch (Exception er) {
-            Timber.i(er.getMessage());
+
+        if (!URLUtil.isValidUrl(text)){
             e.setError("Invalid URL!");
         }
+
         return e.getError() == null;
 
     }

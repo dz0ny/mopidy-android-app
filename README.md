@@ -8,6 +8,7 @@ You can find debug builds under https://github.com/dz0ny/mopidy-android-app/rele
 
 ## Screenshots
 ![Main Screen](screenshots/main.png)
+![Main Screen](screenshots/add.png)
 ![Main Screen](screenshots/main_menu.png)
 ![Main Screen](screenshots/browser.png)
 ![Main Screen](screenshots/lux.png)
