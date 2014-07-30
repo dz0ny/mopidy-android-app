@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 
@@ -21,9 +23,9 @@ public class Mopidy implements Parcelable {
             return new Mopidy[size];
         }
     };
-    private String name;
-    private String host;
-    private int port;
+    public String name;
+    public String host;
+    public int port;
     private String url;
 
     public Mopidy(String name, String host, int port) {
@@ -72,11 +74,11 @@ public class Mopidy implements Parcelable {
         try {
             return this.callApi(ctx, "core.get_version").get("result").getAsString();
         } catch (InterruptedException e) {
-            return "InterruptedException";
+            return "Unknown";
         } catch (NullPointerException e) {
-            return "NullPointerException";
+            return "Unknown";
         } catch (ExecutionException e) {
-            return "ExecutionException";
+            return "Unknown";
         }
 
     }
@@ -84,6 +86,7 @@ public class Mopidy implements Parcelable {
     private JsonObject callApi(Context ctx, String cmd) throws ExecutionException, InterruptedException {
         return Ion.with(ctx)
                 .load(this.getRPCUrl())
+                .setTimeout(1500)
                 .setJsonObjectBody(new JSONRPC(cmd, null))
                 .asJsonObject().get();
     }
@@ -103,4 +106,10 @@ public class Mopidy implements Parcelable {
     public String getHost() {
         return host;
     }
+
+    public String getJSON() {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(this);
+    }
+
 }

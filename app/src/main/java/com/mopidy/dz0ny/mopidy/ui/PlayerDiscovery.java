@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,15 +19,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mopidy.dz0ny.mopidy.R;
 import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
 import com.mopidy.dz0ny.mopidy.api.Mopidy;
 import com.mopidy.dz0ny.mopidy.services.Discovery;
+import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -36,12 +42,14 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.base.BaseCard;
 import it.gmariotti.cardslib.library.view.CardListView;
+import timber.log.Timber;
 
 
 public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRefreshListener {
 
     ArrayList<Card> cards = new ArrayList<Card>();
-    ArrayList<String> hosts = new ArrayList<String>();
+    HashSet<String> hosts = new HashSet<String>();
+    HashSet<String> manualy_added = new HashSet<String>();
     CardArrayAdapter mCardArrayAdapter;
     @InjectView(R.id.myList)
     CardListView listView;
@@ -51,15 +59,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         @Override
         public void onReceive(Context context, Intent intent) {
             Mopidy iapp = intent.getParcelableExtra("app");
-
-            if (!hosts.contains(iapp.getURL())) {
-
-                cards.add(PlayerCard(iapp));
-                mCardArrayAdapter.notifyDataSetChanged();
-                hosts.add(iapp.getURL());
-            }
-
-
+            addAppToList(iapp, false);
         }
     };
     private BroadcastReceiver OnStartReceiver = new BroadcastReceiver() {
@@ -74,6 +74,24 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
             swipe_container.setRefreshing(false);
         }
     };
+
+    private void addAppToList(Mopidy app, boolean save) {
+        if (!hosts.contains(app.getURL())) {
+
+            cards.add(PlayerCard(app));
+            mCardArrayAdapter.notifyDataSetChanged();
+            hosts.add(app.getURL());
+            if (save) {
+                manualy_added.add(app.getURL());
+                SharedPreferences settings = getSharedPreferences("apps", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(app.getURL(), app.getJSON());
+                editor.putStringSet("hosts", manualy_added);
+                // Commit the edits!
+                editor.apply();
+            }
+        }
+    }
 
     private Card PlayerCard(final Mopidy app) {
 
@@ -142,13 +160,34 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        registerReceivers();
-
-        AutoUpdate.check(this);
 
         mCardArrayAdapter = new CardArrayAdapter(this, cards);
         listView.setEmptyView(findViewById(R.id.myListinfo));
-        listView.setAdapter(mCardArrayAdapter);
+        AnimationAdapter animCardArrayAdapter = new SwingBottomInAnimationAdapter(mCardArrayAdapter);
+        animCardArrayAdapter.setAbsListView(listView);
+        listView.setExternalAdapter(animCardArrayAdapter, mCardArrayAdapter);
+
+        addManualApps();
+        registerReceivers();
+        AutoUpdate.check(this);
+    }
+
+    private void addManualApps() {
+        SharedPreferences settings = getSharedPreferences("apps", 0);
+        HashSet<String> saved_apps = (HashSet<String>) settings.getStringSet("hosts", null);
+        if (saved_apps != null) {
+            for (String saved_app : saved_apps) {
+                String app_string = settings.getString(saved_app, null);
+                if (app_string != null) {
+                    Timber.i("Saved app %s", app_string);
+                    Gson gson = new GsonBuilder().create();
+                    Mopidy app = gson.fromJson(app_string, Mopidy.class);
+                    addAppToList(app, true);
+                }
+
+            }
+        }
+
     }
 
     private void registerReceivers() {
@@ -218,13 +257,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
             // after every change has been made to this editText, we would like to check validity
             public void afterTextChanged(Editable s) {
-                String text = player_name.getText().toString().trim();
-                player_name.setError(null);
-
-                // length 0 means there is no text
-                if (text.length() == 0) {
-                    player_name.setError("Name must be specified");
-                }
+                isValidName(player_name);
             }
         });
         player_host.addTextChangedListener(new TextWatcher() {
@@ -240,17 +273,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
             // after every change has been made to this editText, we would like to check validity
             public void afterTextChanged(Editable s) {
-                String text = player_host.getText().toString().trim();
-                player_host.setError(null);
-
-                // length 0 means there is no text
-                if (text.length() == 0) {
-                    player_host.setError("Name must be specified");
-                }
-                if (!URLUtil.isHttpUrl(text)) {
-                    player_host.setError("Invalid URL!");
-                }
-
+                isValidHost(player_host);
             }
         });
         builder.setPositiveButton("Add", null);
@@ -261,16 +284,64 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         });
 
         builder.setTitle("Add Mopidy");
-        AlertDialog alertDialog = builder.create();
+        final AlertDialog alertDialog = builder.create();
         alertDialog.show();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isValidHost(player_host) && isValidName(player_name)) {
+                    try {
+                        URI host = URI.create(player_host.getText().toString());
+                        Mopidy app = new Mopidy(
+                                player_name.getText().toString(),
+                                host.getHost(),
+                                host.getPort()
+                        );
+                        if (app.getVersion(getContext()).equalsIgnoreCase("Unknown")) {
+                            player_host.setError("Mopidy is not responding!");
+                        } else {
+                            addAppToList(app, true);
+                            alertDialog.dismiss();
+                        }
 
+                    } catch (Exception e) {
+                        player_host.setError("Invalid URL!");
+                    }
+                }
 
             }
         });
 
+    }
+
+    private boolean isValidHost(EditText e) {
+        String text = e.getText().toString().trim();
+        e.setError(null);
+
+        // length 0 means there is no text
+        if (text.length() == 0) {
+            e.setError("Required!");
+        }
+
+        try {
+            URI host = URI.create(text);
+        } catch (Exception er) {
+            Timber.i(er.getMessage());
+            e.setError("Invalid URL!");
+        }
+        return e.getError() == null;
+
+    }
+
+    private boolean isValidName(EditText e) {
+        String text = e.getText().toString().trim();
+        e.setError(null);
+
+        // length 0 means there is no text
+        if (text.length() == 0) {
+            e.setError("Required!");
+        }
+        return e.getError() == null;
     }
 
     @Override
