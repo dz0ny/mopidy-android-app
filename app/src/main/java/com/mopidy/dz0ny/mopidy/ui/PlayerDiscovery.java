@@ -45,7 +45,7 @@ import it.gmariotti.cardslib.library.view.CardListView;
 import timber.log.Timber;
 
 
-public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRefreshListener {
+public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRefreshListener, Card.OnSwipeListener {
 
     ArrayList<Card> cards = new ArrayList<Card>();
     HashSet<String> hosts = new HashSet<String>();
@@ -128,7 +128,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
         card.setTitle(app.getURL());
         card.setSecondaryTitle(app.getVersion(getContext()));
-
+        card.setSwipeable(true);
         card.setShadow(true);
         card.setClickable(true);
         card.setOnClickListener(new Card.OnCardClickListener() {
@@ -139,7 +139,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
                 startActivity(i);
             }
         });
-
+        card.setOnSwipeListener(this);
         return card;
     }
 
@@ -166,7 +166,6 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         AnimationAdapter animCardArrayAdapter = new SwingBottomInAnimationAdapter(mCardArrayAdapter);
         animCardArrayAdapter.setAbsListView(listView);
         listView.setExternalAdapter(animCardArrayAdapter, mCardArrayAdapter);
-
         addManualApps();
         registerReceivers();
         AutoUpdate.check(this);
@@ -202,7 +201,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
     @Override
     protected void onResume() {
         super.onResume();
-        Discovery.Start(this);
+        //Discovery.Start(this);
     }
 
     @Override
@@ -349,7 +348,21 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         Discovery.Stop(this);
         hosts.clear();
         cards.clear();
+        addManualApps();
         mCardArrayAdapter.notifyDataSetChanged();
         Discovery.Start(getContext());
+    }
+
+    @Override
+    public void onSwipe(Card card) {
+        if (manualy_added.contains(card.getTitle())){
+            manualy_added.remove(card.getTitle());
+            SharedPreferences settings = getSharedPreferences("apps", 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.remove(card.getTitle());
+            editor.putStringSet("hosts", manualy_added);
+            // Commit the edits!
+            editor.apply();
+        }
     }
 }
