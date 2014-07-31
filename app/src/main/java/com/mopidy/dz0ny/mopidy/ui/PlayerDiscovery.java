@@ -50,7 +50,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
     ArrayList<Card> cards = new ArrayList<Card>();
     HashSet<String> hosts = new HashSet<String>();
-    HashSet<String> manualy_added = new HashSet<String>();
+    HashSet<String> manually_added = new HashSet<String>();
     CardArrayAdapter mCardArrayAdapter;
     @InjectView(R.id.myList)
     CardListView listView;
@@ -83,11 +83,11 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
             mCardArrayAdapter.notifyDataSetChanged();
             hosts.add(app.getURL());
             if (save) {
-                manualy_added.add(app.getURL());
+                manually_added.add(app.getURL());
                 SharedPreferences settings = getSharedPreferences("apps", 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString(app.getURL(), app.getJSON());
-                editor.putStringSet("hosts", manualy_added);
+                editor.putStringSet("hosts", manually_added);
                 // Commit the edits!
                 editor.apply();
             }
@@ -156,7 +156,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         ButterKnife.inject(this);
 
         swipe_container.setOnRefreshListener(this);
-        swipe_container.setColorSchemeColors(android.R.color.holo_blue_bright,
+        swipe_container.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -355,12 +355,12 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onSwipe(Card card) {
-        if (manualy_added.contains(card.getTitle())){
-            manualy_added.remove(card.getTitle());
+        if (manually_added.contains(card.getTitle())){
+            manually_added.remove(card.getTitle());
             SharedPreferences settings = getSharedPreferences("apps", 0);
             SharedPreferences.Editor editor = settings.edit();
             editor.remove(card.getTitle());
-            editor.putStringSet("hosts", manualy_added);
+            editor.putStringSet("hosts", manually_added);
             // Commit the edits!
             editor.apply();
         }

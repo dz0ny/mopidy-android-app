@@ -126,7 +126,7 @@ public class Discovery extends Service {
                 Timber.i("Discovered  %s", host);
                 try {
                     if (host.isReachable(15) && !host.getHostAddress().contains(":")) {
-                        Mopidy app = new Mopidy(serviceInfo.getServiceName().replaceAll("\\\\\\\\032", " "), host.getHostAddress(), port);
+                        Mopidy app = new Mopidy(serviceInfo.getServiceName().replaceAll("\\+032", " "), host.getHostAddress(), port);
                         refreshListeners(app);
                     }
                 } catch (IOException e) {
