@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mopidy.dz0ny.mopidy">
+    package="com.dz0ny.mopidy">
 
     <!-- REQUIRED to send captures to Sentry -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,7 +38,7 @@
             android:parentActivityName=".ui.PlayerDiscovery">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mopidy.dz0ny.mopidy.ui.PlayerDiscovery" />
+                android:value="com.dz0ny.mopidy.ui.PlayerDiscovery" />
         </activity>
     </application>
 

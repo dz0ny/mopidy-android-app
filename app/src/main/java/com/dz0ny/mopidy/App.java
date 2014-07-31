@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy;
+package com.dz0ny.mopidy;
 
 import android.app.Application;
 
@@ -6,8 +6,8 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.joshdholtz.sentry.Sentry;
-import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
-import com.mopidy.dz0ny.mopidy.services.Discovery;
+import com.dz0ny.mopidy.api.AutoUpdate;
+import com.dz0ny.mopidy.services.Discovery;
 
 import timber.log.Timber;
 

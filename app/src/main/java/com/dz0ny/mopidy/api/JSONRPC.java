@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy.api;
+package com.dz0ny.mopidy.api;
 
 import org.json.JSONException;
 import org.json.JSONObject;

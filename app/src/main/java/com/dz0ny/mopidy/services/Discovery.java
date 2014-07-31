@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy.services;
+package com.dz0ny.mopidy.services;
 
 import android.app.Service;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.mopidy.dz0ny.mopidy.api.Mopidy;
+import com.dz0ny.mopidy.api.Mopidy;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -126,7 +126,7 @@ public class Discovery extends Service {
                 Timber.i("Discovered  %s", host);
                 try {
                     if (host.isReachable(15) && !host.getHostAddress().contains(":")) {
-                        Mopidy app = new Mopidy(serviceInfo.getServiceName().replaceAll("(\\+032)", " "), host.getHostAddress(), port);
+                        Mopidy app = new Mopidy(serviceInfo.getServiceName().replaceAll("\\\\032", " ").replace("\\", ""), host.getHostAddress(), port);
                         refreshListeners(app);
                     }
                 } catch (IOException e) {
