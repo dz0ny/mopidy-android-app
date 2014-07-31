@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy.api;
+package com.dz0ny.mopidy.api;
 
 import android.content.Context;
 import android.os.Parcel;

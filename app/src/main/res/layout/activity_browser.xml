@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mopidy.dz0ny.mopidy.ui.Browser">
+    tools:context="com.dz0ny.mopidy.ui.Browser">
 
     <WebView
         android:id="@+id/web_view"

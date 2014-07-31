@@ -53,16 +53,6 @@ install: ./gradlew clean
 script: ./gradlew build
 before_deploy: ./gradlew assembleDebug
 
-deploy:
-  provider: releases
-  api_key:
-    secure: YGEp5vH+RSADo815bjFFRBonj2GfacD/hC8TuSgNb958gbhnig6N7EbrS9gPyV3ZnDo/Lrg4/odCWb4qJQkfleuob81AUCIcqK3qRtoZzTInYU3//CnBLcKML1FL83XUKDEYKfMWqt0jOaraKlb2f/h494mEY8lpHAGSASeYprg=
-  file: app/build/outputs/apk/app-debug.apk
-  skip_cleanup: true
-  on:
-    tags: true
-    all_branches: true
-
 cache:
   directories:
   - /home/travis/.android-sdk

@@ -6,11 +6,11 @@ android {
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
-        applicationId "com.mopidy.dz0ny.mopidy"
+        applicationId "com.dz0ny.mopidy"
         minSdkVersion 16
         targetSdkVersion 20
         versionCode 7
-        versionName "v0.8"
+        versionName "v0.9"
     }
     buildTypes {
         debug {

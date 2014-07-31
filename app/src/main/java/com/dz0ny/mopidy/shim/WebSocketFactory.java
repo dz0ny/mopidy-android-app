@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy.shim;
+package com.dz0ny.mopidy.shim;
 
 /*
  * Copyright (c) 2010 Animesh Kumar  (https://github.com/anismiles)

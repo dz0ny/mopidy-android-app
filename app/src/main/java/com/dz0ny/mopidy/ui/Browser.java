@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy.ui;
+package com.dz0ny.mopidy.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,9 +15,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.mopidy.dz0ny.mopidy.R;
-import com.mopidy.dz0ny.mopidy.api.Mopidy;
-import com.mopidy.dz0ny.mopidy.shim.WebSocketFactory;
+import com.dz0ny.mopidy.R;
+import com.dz0ny.mopidy.api.Mopidy;
+import com.dz0ny.mopidy.shim.WebSocketFactory;
 
 import java.io.IOException;
 

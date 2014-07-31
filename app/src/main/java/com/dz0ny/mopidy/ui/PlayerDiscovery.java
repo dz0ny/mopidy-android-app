@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy.ui;
+package com.dz0ny.mopidy.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -24,10 +24,10 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mopidy.dz0ny.mopidy.R;
-import com.mopidy.dz0ny.mopidy.api.AutoUpdate;
-import com.mopidy.dz0ny.mopidy.api.Mopidy;
-import com.mopidy.dz0ny.mopidy.services.Discovery;
+import com.dz0ny.mopidy.R;
+import com.dz0ny.mopidy.api.AutoUpdate;
+import com.dz0ny.mopidy.api.Mopidy;
+import com.dz0ny.mopidy.services.Discovery;
 import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 

@@ -1,11 +1,11 @@
-package com.mopidy.dz0ny.mopidy.ui;
+package com.dz0ny.mopidy.ui;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.mopidy.dz0ny.mopidy.R;
+import com.dz0ny.mopidy.R;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

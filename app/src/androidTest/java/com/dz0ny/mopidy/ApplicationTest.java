@@ -1,4 +1,4 @@
-package com.mopidy.dz0ny.mopidy;
+package com.dz0ny.mopidy;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
