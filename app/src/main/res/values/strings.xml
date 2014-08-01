@@ -10,4 +10,8 @@
     <string name="add">Add Player</string>
     <string name="refresh">Refresh</string>
     <string name="update_url">https://api.github.com/repos/dz0ny/mopidy-android-app/releases</string>
+    <string name="title_activity_play_mopidy">Play in Mopidy</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>

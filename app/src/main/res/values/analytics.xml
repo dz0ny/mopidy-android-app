@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ga_trackingId">UA-53388194-1</string>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_anonymizeIp">true</bool>
+    <string name="ga_logLevel">verbose</string>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+    <string name="com.dz0ny.mopidy.ui.Browser">Browser</string>
+    <string name="com.dz0ny.mopidy.ui.PlayerDiscovery">Players List</string>
+</resources>

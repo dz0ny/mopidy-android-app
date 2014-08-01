@@ -22,12 +22,16 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.EditText;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.dz0ny.mopidy.R;
 import com.dz0ny.mopidy.api.AutoUpdate;
 import com.dz0ny.mopidy.api.Mopidy;
 import com.dz0ny.mopidy.services.Discovery;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 
@@ -82,15 +86,15 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
             cards.add(PlayerCard(app));
             mCardArrayAdapter.notifyDataSetChanged();
             hosts.add(app.getURL());
-            if (save) {
-                manually_added.add(app.getURL());
-                SharedPreferences settings = getSharedPreferences("apps", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString(app.getURL(), app.getJSON());
-                editor.putStringSet("hosts", manually_added);
-                // Commit the edits!
-                editor.apply();
-            }
+        }
+        if (save) {
+            manually_added.add(app.getURL());
+            SharedPreferences settings = getSharedPreferences("apps", 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(app.getURL(), app.getJSON());
+            editor.putStringSet("hosts", manually_added);
+            // Commit the edits!
+            editor.apply();
         }
     }
 
@@ -135,6 +139,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         card.setOnClickListener(new Card.OnCardClickListener() {
             @Override
             public void onClick(Card card, View view) {
+                addAppToList(app, true);
                 Intent i = new Intent(getContext(), Browser.class);
                 i.putExtra("app", app);
                 startActivity(i);
@@ -238,6 +243,12 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
     private void showAddDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+        Tracker easyTracker = EasyTracker.getInstance(this);
+        easyTracker.set(Fields.SCREEN_NAME, "Add Player");
+        easyTracker.send(MapBuilder
+                .createAppView()
+                .build());
+
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         @SuppressLint("InflateParams") View add_view = getLayoutInflater().inflate(R.layout.add_player, null);
@@ -324,7 +335,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         }
 
 
-        if (!URLUtil.isValidUrl(text)){
+        if (!URLUtil.isValidUrl(text)) {
             e.setError("Invalid URL!");
         }
 
@@ -351,11 +362,20 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         addManualApps();
         mCardArrayAdapter.notifyDataSetChanged();
         Discovery.Start(getContext());
+
+        EasyTracker easyTracker = EasyTracker.getInstance(this);
+        easyTracker.send(MapBuilder
+                        .createEvent("ui_action",
+                                "button_swipe",
+                                "refresh",
+                                null)
+                        .build()
+        );
     }
 
     @Override
     public void onSwipe(Card card) {
-        if (manually_added.contains(card.getTitle())){
+        if (manually_added.contains(card.getTitle())) {
             manually_added.remove(card.getTitle());
             SharedPreferences settings = getSharedPreferences("apps", 0);
             SharedPreferences.Editor editor = settings.edit();
@@ -365,4 +385,17 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
             editor.apply();
         }
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);  // Add this method.
+    }
+
 }

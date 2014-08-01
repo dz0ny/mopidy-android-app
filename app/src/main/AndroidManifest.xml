@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dz0ny.mopidy">
+    package="com.dz0ny.mopidy" >
 
     <!-- REQUIRED to send captures to Sentry -->
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- OPTIONAL but makes Sentry-Android smarter -->
@@ -15,27 +14,45 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".ui.PlayerDiscovery"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.PlayMopidy"
+            android:label="@string/title_activity_play_mopidy"
+            android:theme="@style/FloatingActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gm.action.AUTO_SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".services.Discovery"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".ui.Browser"
             android:label="Browser"
-            android:parentActivityName=".ui.PlayerDiscovery">
+            android:parentActivityName=".ui.PlayerDiscovery" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dz0ny.mopidy.ui.PlayerDiscovery" />

@@ -9,8 +9,8 @@ android {
         applicationId "com.dz0ny.mopidy"
         minSdkVersion 16
         targetSdkVersion 20
-        versionCode 7
-        versionName "v0.9"
+        versionCode 10
+        versionName "v1.0"
     }
     buildTypes {
         debug {
@@ -36,7 +36,6 @@ dependencies {
     compile 'com.jakewharton.timber:timber:2.4.+'
     compile 'org.eclipse.jetty:jetty-websocket:8.1.15.v20140411'
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
-    compile 'com.google.android.gms:play-services:5.0.+'
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:20.0.+'
 }

@@ -18,6 +18,7 @@ import android.webkit.WebViewClient;
 import com.dz0ny.mopidy.R;
 import com.dz0ny.mopidy.api.Mopidy;
 import com.dz0ny.mopidy.shim.WebSocketFactory;
+import com.google.analytics.tracking.android.EasyTracker;
 
 import java.io.IOException;
 
@@ -133,5 +134,17 @@ public class Browser extends Activity {
         if (fullScreen)
             ToggleFullScreen(true);
         super.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);  // Add this method.
     }
 }

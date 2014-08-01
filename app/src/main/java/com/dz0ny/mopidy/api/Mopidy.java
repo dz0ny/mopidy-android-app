@@ -9,7 +9,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+import timber.log.Timber;
 
 
 public class Mopidy implements Parcelable {
@@ -80,6 +83,21 @@ public class Mopidy implements Parcelable {
         } catch (ExecutionException e) {
             return "Unknown";
         }
+
+    }
+
+    public ArrayList getExtensions(Context ctx) {
+
+        String schemes = null;
+        try {
+            schemes = this.callApi(ctx, "core.get_uri_schemes").get("result").getAsString();
+        } catch (ExecutionException e) {
+            Timber.i(e.getMessage());
+        } catch (InterruptedException e) {
+            Timber.i(e.getMessage());
+        }
+        return new Gson().fromJson(schemes, ArrayList.class);
+
 
     }
 
