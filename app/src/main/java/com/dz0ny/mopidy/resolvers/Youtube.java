@@ -1,6 +1,6 @@
 package com.dz0ny.mopidy.resolvers;
 
-import android.app.Activity;
+import android.content.Context;
 
 import com.dz0ny.mopidy.api.Mopidy;
 
@@ -8,9 +8,9 @@ import java.net.URI;
 
 public class Youtube implements Resolver {
 
-    private Activity ctx;
+    private Context ctx;
 
-    public Youtube(Activity ctx) {
+    public Youtube(Context ctx) {
         this.ctx = ctx;
     }
 

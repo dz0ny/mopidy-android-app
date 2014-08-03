@@ -7,8 +7,8 @@ android {
         applicationId "com.dz0ny.mopidy"
         minSdkVersion 16
         targetSdkVersion 20
-        versionCode 10
-        versionName "v1.0"
+        versionCode 11
+        versionName "v1.1"
     }
     buildTypes {
         debug {
@@ -21,6 +21,11 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     packagingOptions {
@@ -42,4 +47,6 @@ dependencies {
     compile 'com.android.support:support-v4:20.0.+'
     testCompile 'junit:junit:4.+'
     testCompile 'org.robolectric:robolectric:2.+'
+    testCompile('com.squareup:fest-android:1.0.+') { exclude module: 'support-v4' }
+
 }

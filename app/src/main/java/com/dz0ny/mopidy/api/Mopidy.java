@@ -6,13 +6,15 @@ import android.os.Parcelable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
@@ -89,28 +91,30 @@ public class Mopidy implements Parcelable {
 
     }
 
-    public ArrayList<String> getSchemes(Context ctx) {
+    public HashSet<String> getSchemes(Context ctx) {
 
-        String schemes = null;
+        HashSet<String> schemes = new HashSet<String>();
+
+        JsonArray list = null;
         try {
-            schemes = this.callApi(ctx, "core.get_uri_schemes", null).get("result").getAsString();
-        } catch (ExecutionException e) {
-            Timber.i(e.getMessage());
-        } catch (InterruptedException e) {
+            list = this.callApi(ctx, "core.get_uri_schemes", null).get("result").getAsJsonArray();
+        } catch (Exception e) {
             Timber.i(e.getMessage());
         }
-        return (ArrayList<String>) new Gson().fromJson(schemes, ArrayList.class);
+
+        for (JsonElement scheme: list){
+            schemes.add(scheme.getAsString());
+        }
+        return schemes;
 
     }
 
     public Boolean tracklistClear(Context ctx) {
-
+        Timber.i("tracklistClear called");
         Boolean result = null;
         try {
             result = this.callApi(ctx, "core.tracklist.clear", null).get("result").getAsBoolean();
-        } catch (ExecutionException e) {
-            Timber.i(e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             Timber.i(e.getMessage());
         }
         return result;
@@ -118,29 +122,38 @@ public class Mopidy implements Parcelable {
     }
 
     public Boolean tracklistAdd(Context ctx, String url) {
-        JSONObject params = new JSONObject();
+        Timber.i("Adding track %s, %s", url, ctx);
+        HashMap<String,String> params = new HashMap<> ();
         try {
             params.put("uri", url);
-            try {
-                return this.callApi(ctx, "core.tracklist.add", params).get("result").getAsBoolean();
-            } catch (ExecutionException e) {
-                Timber.i(e.getMessage());
-            } catch (InterruptedException e) {
-                Timber.i(e.getMessage());
-            }
-
-        } catch (JSONException e) {
+            Timber.i("Params %s", params);
+            return this.callApi(ctx, "core.tracklist.add", params).get("result").getAsBoolean();
+        } catch (Exception e) {
             Timber.i(e.getMessage());
         }
         return false;
 
     }
 
-    private JsonObject callApi(Context ctx, String cmd, JSONObject params) throws ExecutionException, InterruptedException {
+    public Boolean play(Context ctx) {
+
+        try {
+            return this.callApi(ctx, "core.playback.play", null).get("result").getAsBoolean();
+        } catch (Exception e) {
+            Timber.i(e.getMessage());
+        }
+        return false;
+
+    }
+
+    private JsonObject callApi(Context ctx, String cmd, HashMap<String,String> params) throws ExecutionException, InterruptedException {
+        JSONRPC json = new JSONRPC(cmd, params);
+        Timber.i(new Gson().toJson(json));
         return Ion.with(ctx)
                 .load(this.getRPCUrl())
                 .setTimeout(1500)
-                .setJsonObjectBody(new JSONRPC(cmd, params))
+                //.proxy("127.0.0.1", 8888)
+                .setJsonObjectBody(json)
                 .asJsonObject().get();
     }
 

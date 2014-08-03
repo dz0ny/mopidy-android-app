@@ -17,11 +17,17 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Sentry.init(this, getString(R.string.sentry_dsn));
-        AutoUpdate.init(this, getString(R.string.update_url));
+        try {
+            AutoUpdate.init(this, getString(R.string.update_url));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
+        } else {
+            Sentry.init(this, getString(R.string.sentry_dsn));
         }
     }
 

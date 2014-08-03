@@ -1,6 +1,6 @@
 package com.dz0ny.mopidy.resolvers;
 
-import android.app.Activity;
+import android.content.Context;
 
 import com.dz0ny.mopidy.api.Mopidy;
 import com.koushikdutta.ion.Ion;
@@ -13,10 +13,10 @@ import static java.util.regex.Pattern.MULTILINE;
 
 public class Spotify implements Resolver {
 
-    private Activity ctx;
+    private Context ctx;
     private Pattern curl = Pattern.compile(("property=\"og:audio\" content=\"([\\w:]+)\""), MULTILINE);
 
-    public Spotify(Activity playMopidy) {
+    public Spotify(Context ctx) {
         this.ctx = ctx;
     }
 
