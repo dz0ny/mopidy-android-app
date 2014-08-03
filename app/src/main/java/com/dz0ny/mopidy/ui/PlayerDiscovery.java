@@ -93,8 +93,7 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(app.getURL(), app.getJSON());
             editor.putStringSet("hosts", manually_added);
-            // Commit the edits!
-            editor.apply();
+            editor.commit();
         }
     }
 
@@ -116,6 +115,9 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
                     case R.id.action_qr:
                         path = Uri.parse(getQR(app.getURL()));
                         break;
+                    case R.id.remember:
+                        addAppToList(app, true);
+                        return;
                     default:
                         return;
                 }
@@ -234,6 +236,10 @@ public class PlayerDiscovery extends Activity implements SwipeRefreshLayout.OnRe
         switch (item.getItemId()) {
             case R.id.action_add:
                 showAddDialog();
+                return true;
+            case R.id.action_settings:
+                Intent i = new Intent(getContext(), SettingsActivity.class);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -1,0 +1,16 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="autodiscover"
+        android:title="@string/autodiscover"
+        android:summary="@string/autodiscover_summary"
+        android:defaultValue="false" />
+
+    <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
+         design guidelines. -->
+    <Preference android:title="@string/source_code">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://goo.gl/6OxXPk" />
+    </Preference>
+
+</PreferenceScreen>

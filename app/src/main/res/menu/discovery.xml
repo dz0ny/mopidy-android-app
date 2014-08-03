@@ -2,6 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.dz0ny.mopidy.ui.PlayerDiscovery">
     <item
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:showAsAction="always"
+        android:title="@string/settings" />
+    <item
         android:id="@+id/action_add"
         android:icon="@drawable/ic_action_add"
         android:showAsAction="always"

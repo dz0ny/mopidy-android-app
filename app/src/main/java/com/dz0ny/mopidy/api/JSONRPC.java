@@ -1,13 +1,6 @@
 package com.dz0ny.mopidy.api;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
-
-/**
- * Created by dz0ny on 26.7.2014.
- */
 
 
 public class JSONRPC {
@@ -24,20 +17,10 @@ public class JSONRPC {
     String jsonrpc = "2.0";
     String id = "1";
 
-    public JSONRPC(String cmd, Map<String, String> map) {
+    public JSONRPC(String cmd, JSONObject params) {
         method = cmd;
         id = MopidyRPC.getID();
-        if (map != null) {
-            params = new JSONObject();
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                try {
-                    params.put(entry.getKey(), entry.getValue());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        params = params;
     }
 }
 

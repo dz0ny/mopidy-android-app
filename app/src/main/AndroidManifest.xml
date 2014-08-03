@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dz0ny.mopidy" >
+    package="com.dz0ny.mopidy">
 
     <!-- REQUIRED to send captures to Sentry -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,10 +14,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".ui.PlayerDiscovery"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +27,7 @@
         <activity
             android:name=".ui.PlayMopidy"
             android:label="@string/title_activity_play_mopidy"
-            android:theme="@style/FloatingActivity" >
+            android:theme="@style/FloatingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -52,7 +52,15 @@
         <activity
             android:name=".ui.Browser"
             android:label="Browser"
-            android:parentActivityName=".ui.PlayerDiscovery" >
+            android:parentActivityName=".ui.PlayerDiscovery">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dz0ny.mopidy.ui.PlayerDiscovery" />
+        </activity>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".ui.PlayerDiscovery">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dz0ny.mopidy.ui.PlayerDiscovery" />

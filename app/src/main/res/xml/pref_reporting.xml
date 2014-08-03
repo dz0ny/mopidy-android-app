@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <CheckBoxPreference
+        android:key="report_crashes"
+        android:title="Automatically report crashes"
+        android:defaultValue="true" />
+
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <CheckBoxPreference
+        android:key="report_usage"
+        android:title="Send usage patterns"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

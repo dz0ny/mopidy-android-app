@@ -11,4 +11,9 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/show_qr" />
+    <item
+        android:id="@+id/remember"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/remember" />
 </menu>

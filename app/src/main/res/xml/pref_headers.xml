@@ -1,0 +1,13 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="com.dz0ny.mopidy.ui.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_general" />
+
+    <header
+        android:fragment="com.dz0ny.mopidy.ui.SettingsActivity$ReportPreferenceFragment"
+        android:title="@string/pref_reporting" />
+
+</preference-headers>

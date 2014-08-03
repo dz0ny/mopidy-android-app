@@ -2,8 +2,10 @@ package com.dz0ny.mopidy.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +15,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dz0ny.mopidy.R;
 import com.dz0ny.mopidy.api.Mopidy;
+import com.dz0ny.mopidy.resolvers.Resolver;
+import com.dz0ny.mopidy.resolvers.SoundCloud;
+import com.dz0ny.mopidy.resolvers.Spotify;
+import com.dz0ny.mopidy.resolvers.Youtube;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import timber.log.Timber;
-
 
 
 public class PlayMopidy extends Activity implements AdapterView.OnItemSelectedListener {
@@ -38,6 +47,8 @@ public class PlayMopidy extends Activity implements AdapterView.OnItemSelectedLi
     LinearLayout refresher;
 
     MopidyAdapter players;
+    private List<Resolver> resolvers;
+    private String content_url;
 
     private void addManualApps(ArrayAdapter holder) {
         SharedPreferences settings = getSharedPreferences("apps", 0);
@@ -55,11 +66,11 @@ public class PlayMopidy extends Activity implements AdapterView.OnItemSelectedLi
 
             }
             holder.notifyDataSetChanged();
-            if (players.isEmpty()){
+            if (players.isEmpty()) {
                 send.setVisibility(View.GONE);
                 selector.setVisibility(View.GONE);
                 refresher.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 send.setVisibility(View.VISIBLE);
                 selector.setVisibility(View.VISIBLE);
                 refresher.setVisibility(View.GONE);
@@ -73,11 +84,34 @@ public class PlayMopidy extends Activity implements AdapterView.OnItemSelectedLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_mopidy);
         ButterKnife.inject(this);
+
+        // Get intent, action and MIME type
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                Timber.i("Text for this intent is '%s'", sharedText);
+                // http://regex101.com/r/uY9tV4/2
+                content_url = Pattern.compile("(https?://[\\w\\S]+)", Pattern.CASE_INSENSITIVE|Pattern.MULTILINE).matcher(sharedText).group(0);
+                Timber.i("Url for this intent is %s", content_url);
+            }
+        } else {
+            Toast.makeText(this, "This content is not supported!", Toast.LENGTH_LONG);
+            finish();
+        }
+
+
         players = new MopidyAdapter(this);
         players_select.setAdapter(players);
         players_select.setOnItemSelectedListener(this);
         players.setDropDownViewResource(R.layout.player_card);
         addManualApps(players);
+        resolvers.add(new Youtube(this));
+        resolvers.add(new SoundCloud(this));
+        resolvers.add(new Spotify(this));
     }
 
     @Override
@@ -88,12 +122,19 @@ public class PlayMopidy extends Activity implements AdapterView.OnItemSelectedLi
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        send.setEnabled(true);
+
+        for (Resolver site : resolvers) {
+            if (site.canResolve(URI.create(content_url))){
+                if (site.canPlay(players.getItem(i))){
+                    send.setVisibility(View.VISIBLE);
+                }
+            }
+        }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-        send.setEnabled(false);
+        send.setVisibility(View.GONE);
     }
 }
 

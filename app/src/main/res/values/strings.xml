@@ -2,16 +2,19 @@
 <resources>
 
     <string name="app_name">Mopidy</string>
-    <string name="no_devices">Can\'t find any Mopidy on local network!</string>
+    <string name="no_devices">Can\'t find any Mopidy players on local network!</string>
     <string name="sentry_dsn">https://fb90deae8b514b2dbf5fc60fdcbfb5d9:e595554e65db4b1b955aa841f38a869f@app.getsentry.com/28038</string>
     <string name="open_browser">Open in browser</string>
     <string name="show_qr">Show QR code</string>
-    <string name="modifed_mopidy_api">https://gist.githubusercontent.com/dz0ny/adc674cdfba4070ba15c/raw</string>
     <string name="add">Add Player</string>
-    <string name="refresh">Refresh</string>
     <string name="update_url">https://api.github.com/repos/dz0ny/mopidy-android-app/releases</string>
-    <string name="title_activity_play_mopidy">Play in Mopidy</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_play_mopidy">Play in Mopidy player</string>
+    <string name="settings">Settings</string>
+    <string name="remember">Remember player</string>
+    <string name="pref_reporting">Reporting and Privacy</string>
+    <string name="pref_general">General</string>
+    <string name="autodiscover">Autodiscover players</string>
+    <string name="autodiscover_summary">Search network for players on startup</string>
+    <string name="source_code">View source code</string>
 
 </resources>

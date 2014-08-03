@@ -1,8 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-    }
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
@@ -20,16 +18,20 @@ android {
             runProguard false
         }
     }
-    productFlavors {
-    }
 
     lintOptions {
         abortOnError false
     }
-}
 
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'screenshots'
+    }
+}
+apply plugin: 'android-unit-test'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.koushikdutta.ion:ion:1.+'
     compile 'com.github.gabrielemariotti.cards:library:1.8.0'
     compile 'com.jakewharton:butterknife:5.1.1'
@@ -38,4 +40,6 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:20.0.+'
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.robolectric:robolectric:2.+'
 }
